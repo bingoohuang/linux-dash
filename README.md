@@ -19,6 +19,10 @@
 </p>
 
 ![image](https://user-images.githubusercontent.com/1940588/126266154-0349fb54-d83b-4980-9b54-3421a0ea4194.png)
+![image](https://user-images.githubusercontent.com/1940588/126266213-f3a7db9a-a8ec-45f3-8ba3-df1012721196.png)
+![image](https://user-images.githubusercontent.com/1940588/126266273-055fce1d-b91a-4c44-898b-784d1d921b7a.png)
+![image](https://user-images.githubusercontent.com/1940588/126266302-ebe7fe13-403a-494e-b1d3-076a27aba646.png)
+![image](https://user-images.githubusercontent.com/1940588/126266322-a8bd78c9-389e-4961-8971-6052c16abd91.png)
 
 <p align="center">
   <a href="https://gitter.im/afaqurk/linux-dash">
