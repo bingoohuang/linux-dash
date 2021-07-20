@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -27,7 +28,7 @@ var assetsFs embed.FS
 var linuxJsonApiSh string
 
 //go:embed ping_hosts
-var pingHosts []byte
+var pingHosts string
 
 var jsFnEnd = regexp.MustCompile(`(?m)^\}$`)
 
@@ -61,16 +62,16 @@ func main() {
 			return
 		}
 
-		if module == "ping" {
-			os.WriteFile("/tmp/ping_hosts", pingHosts, os.ModePerm)
-		}
-
 		// Execute the command
 		shell := extractShell(module)
 		if shell == "" {
 			w.Write([]byte(invalidModule))
 			return
 		}
+		if module == "ping" {
+			shell = strings.ReplaceAll(shell, "PING_HOSTS", pingHosts)
+		}
+
 		cmd := exec.Command("/bin/bash", "-c", shell)
 		var output bytes.Buffer
 		cmd.Stdout = &output

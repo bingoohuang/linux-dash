@@ -369,7 +369,7 @@ number_of_cpu_cores() {
 
 # http://askubuntu.com/questions/413367/ping-multiple-ips-using-bash
 ping() {
-
+  echo "PING_HOSTS" > /tmp/ping_hosts
 	# get absolute path to config file
   #  local SCRIPTPATH=$(dirname $(readlink -f $0))
 	#local CONFIG_PATH=$SCRIPTPATH"/config/ping_hosts"
