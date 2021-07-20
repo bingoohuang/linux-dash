@@ -45,26 +45,18 @@ func ExtractShell(module string) string {
 
 const invalidModule = `'{"success":false,"status":"Invalid module"}'`
 
-func MakeDashServe(f func(module, shell string) ([]byte, error)) http.HandlerFunc {
+func MakeDashServe(f func(module string) ([]byte, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) { DashServe(w, r, f) }
 }
 
-func DashServe(w http.ResponseWriter, r *http.Request, f func(module, shell string) ([]byte, error)) {
+func DashServe(w http.ResponseWriter, r *http.Request, f func(module string) ([]byte, error)) {
 	module := r.URL.Query().Get("module")
 	if module == "" {
 		http.Error(w, "No module specified, or requested module doesn't exist.", 406)
 		return
 	}
 
-	// Execute the command
-	shell := ExtractShell(module)
-	if shell == "" {
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		_, _ = w.Write([]byte(invalidModule))
-		return
-	}
-
-	if out, err := f(module, shell); err != nil {
+	if out, err := f(module); err != nil {
 		log.Printf("Error executing '%s': %s\n\tScript output: %s\n", module, err.Error(), string(out))
 		http.Error(w, "Unable to execute module.", http.StatusInternalServerError)
 	} else {
@@ -73,7 +65,13 @@ func DashServe(w http.ResponseWriter, r *http.Request, f func(module, shell stri
 	}
 }
 
-func ExecuteShell(module, shell string) ([]byte, error) {
+func ExecuteShell(module string) ([]byte, error) {
+	// Execute the command
+	shell := ExtractShell(module)
+	if shell == "" {
+		return []byte(invalidModule), nil
+	}
+
 	if module == "ping" {
 		os.WriteFile("/tmp/ping_hosts", PingHosts, os.ModePerm)
 	}
