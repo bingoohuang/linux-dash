@@ -1,4 +1,4 @@
-package linux_dash
+package linuxdash
 
 import (
 	"bytes"

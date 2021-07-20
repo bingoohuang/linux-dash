@@ -3,14 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/bingoohuang/linux_dash"
+	"github.com/bingoohuang/linuxdash"
 	"net/http"
 	"os"
 )
 
 func main() {
-	http.Handle("/", http.FileServer(http.FS(linux_dash.DashStatic)))
-	http.HandleFunc("/server/", linux_dash.DashServe)
+	http.Handle("/", http.FileServer(http.FS(linuxdash.DashStatic)))
+	http.HandleFunc("/server/", linuxdash.DashServe)
 
 	listen := flag.String("listen", ":8081", "Where the server listens for connections. [interface]:port")
 	flag.Parse()

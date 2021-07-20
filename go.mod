@@ -1,3 +1,3 @@
-module github.com/bingoohuang/linux_dash
+module github.com/bingoohuang/linuxdash
 
 go 1.16
