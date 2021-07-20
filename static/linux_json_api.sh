@@ -188,6 +188,11 @@ docker_processes() {
 
   local result=""
   local dockerCommand=$(type -P docker)
+  if [ -z "$var" ]; then
+      $ECHO "[]"
+      return
+  fi
+
   local containers="$($dockerCommand ps | $AWK '{if(NR>1) print $NF}')"
 
   for i in $containers; do
