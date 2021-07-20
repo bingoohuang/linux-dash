@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"io/fs"
+	"log"
 	"net/http"
 	"os/exec"
 	"regexp"
@@ -25,8 +26,8 @@ var jsFnEnd = regexp.MustCompile(`(?m)^\}$`)
 
 const Shebang = `#!/bin/bash`
 
-func extractShell(name string) string {
-	re := fmt.Sprintf(`(?m)^%s\(\)\s*\{$`, regexp.QuoteMeta(name))
+func ExtractShell(module string) string {
+	re := fmt.Sprintf(`(?m)^%s\(\)\s*\{$`, regexp.QuoteMeta(module))
 	fnStart := regexp.MustCompile(re)
 	idx := fnStart.FindStringSubmatchIndex(linuxJsonApiSh)
 	if len(idx) == 0 {
@@ -37,12 +38,21 @@ func extractShell(name string) string {
 	endIdx := jsFnEnd.FindStringSubmatchIndex(sub)
 	commonEnd := jsFnEnd.FindStringSubmatchIndex(linuxJsonApiSh)
 
-	return linuxJsonApiSh[len(Shebang)+2:commonEnd[0]+2] + sub[:endIdx[0]+2] + name + "\n"
+	s := linuxJsonApiSh[len(Shebang)+2:commonEnd[0]+2] + sub[:endIdx[0]+2] + module + "\n"
+	if module == "ping" {
+		s = strings.ReplaceAll(s, "PING_HOSTS", pingHosts)
+	}
+
+	return s
 }
 
 const invalidModule = `'{"success":false,"status":"Invalid module"}'`
 
-func DashServe(w http.ResponseWriter, r *http.Request) {
+func MakeDashServe(f func(shell string) ([]byte, error)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) { DashServe(w, r, f) }
+}
+
+func DashServe(w http.ResponseWriter, r *http.Request, f func(shell string) ([]byte, error)) {
 	module := r.URL.Query().Get("module")
 	if module == "" {
 		http.Error(w, "No module specified, or requested module doesn't exist.", 406)
@@ -50,26 +60,26 @@ func DashServe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Execute the command
-	shell := extractShell(module)
+	shell := ExtractShell(module)
 	if shell == "" {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.Write([]byte(invalidModule))
+		_, _ = w.Write([]byte(invalidModule))
 		return
 	}
-	if module == "ping" {
-		shell = strings.ReplaceAll(shell, "PING_HOSTS", pingHosts)
-	}
 
+	if out, err := f(shell); err != nil {
+		log.Printf("Error executing '%s': %s\n\tScript output: %s\n", module, err.Error(), string(out))
+		http.Error(w, "Unable to execute module.", http.StatusInternalServerError)
+	} else {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		_, _ = w.Write(out)
+	}
+}
+
+func ExecuteShell(shell string) ([]byte, error) {
 	cmd := exec.Command("/bin/bash", "-c", shell)
 	var output bytes.Buffer
 	cmd.Stdout = &output
 	err := cmd.Run()
-	if err != nil {
-		fmt.Printf("Error executing '%s': %s\n\tScript output: %s\n", module, err.Error(), output.String())
-		http.Error(w, "Unable to execute module.", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Write(output.Bytes())
+	return output.Bytes(), err
 }

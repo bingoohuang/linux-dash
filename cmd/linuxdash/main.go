@@ -10,7 +10,7 @@ import (
 
 func main() {
 	http.Handle("/", http.FileServer(http.FS(linuxdash.DashStatic)))
-	http.HandleFunc("/server/", linuxdash.DashServe)
+	http.HandleFunc("/server/", linuxdash.MakeDashServe(linuxdash.ExecuteShell))
 
 	listen := flag.String("listen", ":8081", "Where the server listens for connections. [interface]:port")
 	flag.Parse()
