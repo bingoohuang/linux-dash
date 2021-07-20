@@ -18,6 +18,7 @@
   </small>
 </p>
 
+![image](https://user-images.githubusercontent.com/1940588/126266154-0349fb54-d83b-4980-9b54-3421a0ea4194.png)
 
 <p align="center">
   <a href="https://gitter.im/afaqurk/linux-dash">
