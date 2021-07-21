@@ -274,10 +274,12 @@ general_info() {
   local uname=$($uName -r | $SED -e 's/^"//'  -e 's/"$//')
   local os=$($ECHO $lsbRelease $uname)
   local hostname=$($hostName)
+  local ip=$($hostName -I)
+  local release=$($CAT /etc/*-release | head -1)
   local uptime_seconds=$($CAT /proc/uptime | awk '{print $1}')
   local server_time=$(date)
 
-  $ECHO "{ \"OS\": \"$os\", \"Hostname\": \"$hostname\", \"Uptime\": \" $(displaytime ${uptime_seconds%.*}) \", \"Server Time\": \"$server_time\" }" | _parseAndPrint
+  $ECHO "{ \"OS\": \"$os\", \"Hostname\": \"$hostname\", \"IP\": \"$ip\", \"Release\": \"$release\", \"Uptime\": \" $(displaytime ${uptime_seconds%.*}) \", \"Server Time\": \"$server_time\" }" | _parseAndPrint
 }
 
 io_stats() {
