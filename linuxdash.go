@@ -73,7 +73,7 @@ func ExecuteShell(module string) ([]byte, error) {
 	}
 
 	if module == "ping" {
-		os.WriteFile("/tmp/ping_hosts", PingHosts, os.ModePerm)
+		os.WriteFile(".linuxdash_ping_hosts", PingHosts, os.ModePerm)
 	}
 
 	cmd := exec.Command("/bin/bash", "-c", shell)

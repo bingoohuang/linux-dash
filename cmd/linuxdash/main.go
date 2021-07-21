@@ -13,7 +13,13 @@ func main() {
 	http.HandleFunc("/server/", linuxdash.MakeDashServe(linuxdash.ExecuteShell))
 
 	listen := flag.String("listen", ":8081", "Where the server listens for connections. [interface]:port")
+	version := flag.Bool("v", false, "Print version and exit")
 	flag.Parse()
+
+	if *version {
+		fmt.Println("v1.0.0 2021-07-21 09:57:34")
+		os.Exit(0)
+	}
 
 	fmt.Println("Starting http server at:", *listen)
 	if err := http.ListenAndServe(*listen, nil); err != nil {

@@ -377,7 +377,7 @@ ping() {
 	# get absolute path to config file
   #  local SCRIPTPATH=$(dirname $(readlink -f $0))
 	#local CONFIG_PATH=$SCRIPTPATH"/config/ping_hosts"
-	local CONFIG_PATH="/tmp/ping_hosts"
+	local CONFIG_PATH=".linuxdash_ping_hosts"
 
     local pingCmd=$(type -P ping)
     local numOfLinesInConfig=$($SED -n '$=' $CONFIG_PATH)
