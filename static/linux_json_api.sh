@@ -278,8 +278,9 @@ general_info() {
   local release=$($CAT /etc/*-release | head -1)
   local uptime_seconds=$($CAT /proc/uptime | awk '{print $1}')
   local server_time=$(date)
+  local disk_rotational=$($CAT /sys/block/sda/queue/rotational)
 
-  $ECHO "{ \"OS\": \"$os\", \"Hostname\": \"$hostname\", \"IP\": \"$ip\", \"Release\": \"$release\", \"Uptime\": \" $(displaytime ${uptime_seconds%.*}) \", \"Server Time\": \"$server_time\" }" | _parseAndPrint
+  $ECHO "{ \"OS\": \"$os\", \"Hostname\": \"$hostname\", \"IP\": \"$ip\", \"diskRotational\": \"$disk_rotational\", \"Release\": \"$release\", \"Uptime\": \" $(displaytime ${uptime_seconds%.*}) \", \"Server Time\": \"$server_time\" }" | _parseAndPrint
 }
 
 io_stats() {
